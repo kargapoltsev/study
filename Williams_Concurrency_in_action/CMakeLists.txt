@@ -1,10 +1,9 @@
-set(COURSE_NAME Meyers_11_14)
+set(COURSE_NAME Williams_Concurrency_in_action)
 
 set (SOURCES_LIST
     main.cpp
-#    5_5_pass_by_value.cpp
-#    5_5_tag_dispatch.cpp
-#    5_5_constanting_templates.cpp
+	2_4.cpp
+    3_3_1.cpp
 )
 
 add_executable(${COURSE_NAME} ${SOURCES_LIST})

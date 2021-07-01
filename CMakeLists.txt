@@ -10,3 +10,4 @@ conan_basic_setup()
 enable_testing()
 
 add_subdirectory(Meyers_11_14)
+add_subdirectory(Williams_Concurrency_in_action)
