@@ -1,6 +1,6 @@
 @echo off
 
-set "build_dir=build1\"
+set "build_dir=build\"
 
 if exist %build_dir% (
     cd %build_dir%
