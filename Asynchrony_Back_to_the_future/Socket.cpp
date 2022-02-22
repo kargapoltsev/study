@@ -5,18 +5,6 @@ namespace asio = boost::asio;
 namespace 
 {
 
-asio::io_service& getIOService()
-{
-    static auto ioService = boost::asio::io_service();
-    return ioService;
-}
-
-bool hasEnd(size_t const posEnd, Buffer const& b, Buffer const& stopSign)
-{
-    return posEnd >= stopSign.size() &&
-        b.rfind(stopSign, posEnd - stopSign.size()) != std::string::npos;
-}
-
 auto makeBuffer(Buffer const& b, size_t const offset = 0)
 {
     return asio::buffer(&b[offset], b.size() - offset);

@@ -2,25 +2,6 @@
 #include <thread>
 #include "Socket.h"
 
-using Handler = std::function<void()>;
-
-void startNewThread(Handler handler)
-{
-    log("startNewThread");
-    std::thread([handler]()
-    {
-        try
-        {
-            log("startNewThread: thread has been created");
-            handler();
-            log("startNewThread: thread was ended successfully");
-        } catch(std::exception const& e)
-        {
-            log("startNewThread: thread was ended with error " + std::string(e.what()));
-        }
-    }).detach();
-}
-
 TEST(BACK_TO_FUTURE, MultiThreadedServerTest)
 {
     Acceptor acceptor(8800);
