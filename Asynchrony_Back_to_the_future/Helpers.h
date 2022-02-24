@@ -19,3 +19,5 @@ void startNewThread(Handler handler);
 
 boost::asio::io_service& getIOService();
 
+#define RAISE(D_str)                throw std::runtime_error(D_str)
+#define VERIFY(D_cond, D_str)       if (!(D_cond)) RAISE("Verification failed: " #D_cond ": " D_str)
