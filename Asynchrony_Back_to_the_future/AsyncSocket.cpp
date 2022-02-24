@@ -20,24 +20,24 @@ AsyncSocket::AsyncSocket()
     : socket_(getIOService())
 {}
 
-void AsyncSocket::read(Buffer& b, IoHandler handler)
+void AsyncSocket::read(Buffer& b, async::IoHandler handler)
 {
     async_read(
         socket_, 
         makeBuffer(b),
         asio::transfer_all(),
-        [handler = std::move(handler)](const Error& error, std::size_t) -> void 
+        [handler = std::move(handler)](const async::Error& error, std::size_t) -> void 
         {
             handler(error);
         }
     );
 }
 
-void AsyncSocket::readSome(Buffer& b, IoHandler handler)
+void AsyncSocket::readSome(Buffer& b, async::IoHandler handler)
 {
     socket_.async_read_some(
         makeBuffer(b),
-        [&b, handler = std::move(handler)](const Error& error, std::size_t bytes) -> void
+        [&b, handler = std::move(handler)](const async::Error& error, std::size_t bytes) -> void
         {
             handler(error);
             b.resize(bytes);
@@ -45,7 +45,7 @@ void AsyncSocket::readSome(Buffer& b, IoHandler handler)
     );
 }
 
-void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, IoHandler handler)
+void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, async::IoHandler handler)
 {
     struct UntilHandler
     {
@@ -53,7 +53,7 @@ void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, IoHandler handler)
             asio::ip::tcp::socket& socket,
             Buffer& buffer,
             Buffer stopSign,
-            IoHandler handler)
+            async::IoHandler handler)
             : offset_(0)
             , socket_(socket)
             , buffer_(buffer)
@@ -67,12 +67,12 @@ void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, IoHandler handler)
             socket_.async_read_some(makeBuffer(buffer_, offset_), *this);
         }
 
-        void complete(const Error& error) const
+        void complete(const async::Error& error) const
         {
             handler_(error);
         }
 
-        void operator()(const Error& error, std::size_t bytes)
+        void operator()(const async::Error& error, std::size_t bytes)
         {
             if (!!error) {
                 return complete(error);
@@ -101,7 +101,7 @@ void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, IoHandler handler)
         asio::ip::tcp::socket& socket_;
         Buffer& buffer_;
         Buffer stopSign_;
-        IoHandler handler_;
+        async::IoHandler handler_;
     };
 
     UntilHandler(
@@ -111,12 +111,12 @@ void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, IoHandler handler)
         std::move(handler)).read();
 }
 
-void AsyncSocket::write(const Buffer& b, IoHandler handler)
+void AsyncSocket::write(const Buffer& b, async::IoHandler handler)
 {
     boost::asio::async_write(
         socket_, 
         makeBuffer(b),
-        [handler = std::move(handler)](Error const& error, std::size_t)
+        [handler = std::move(handler)](async::Error const& error, size_t)
         {
             handler(error);
         }
@@ -134,7 +134,7 @@ AsyncAcceptor::AsyncAcceptor(int const port)
             asio::ip::tcp::v4(), port))
 {}
 
-void AsyncAcceptor::accept(AsyncSocket& socket, IoHandler handler)
+void AsyncAcceptor::accept(AsyncSocket& socket, async::IoHandler handler)
 {
     acceptor_.async_accept(socket.socket_, handler);
 }

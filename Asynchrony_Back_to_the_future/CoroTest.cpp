@@ -5,14 +5,14 @@
 void doCoro()
 {
     std::cout << '2';
-    yield();
+    coro::yield();
     std::cout << '4';
 }
 
 TEST(BACK_TO_FUTURE, CoroTest)
 {
     std::cout << '1';
-    Coro c(doCoro);
+    coro::Coro c(doCoro);
     std::cout << '3';
     c.resume();
     std::cout << '5';

@@ -1,6 +1,9 @@
 #include "Coro.h"
 #include <iostream>
 
+namespace coro
+{
+
 thread_local Coro* currentThreadCoro;
 constexpr size_t STACK_SIZE = 1024 * 32;
 
@@ -39,7 +42,7 @@ Coro::~Coro()
                 //<< boost::posix_time::microsec_clock::local_time()
                 << ": "
                 << "Destroying started coro"
-            << std::endl;
+                << std::endl;
 
         } while (false);
     }
@@ -118,4 +121,6 @@ void Coro::init0()
 void Coro::yield0()
 {
     externalContext_ = context::jump_fcontext(externalContext_, nullptr).fctx;
+}
+
 }

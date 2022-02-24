@@ -2,6 +2,9 @@
 #include "Helpers.h"
 #include <boost/context/detail/fcontext.hpp>
 
+namespace coro
+{
+
 void yield();
 
 bool isInsideInCoro();
@@ -36,3 +39,5 @@ private:
     bool running_ = false;
     bool started_ = false;
 };
+
+}

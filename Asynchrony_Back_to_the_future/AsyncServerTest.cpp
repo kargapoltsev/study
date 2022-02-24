@@ -1,26 +1,7 @@
 #include <gtest/gtest.h>
 #include "Helpers.h"
 #include "AsyncSocket.h"
-
-void go(Handler handler)
-{
-    getIOService().post(std::move(handler));
-}
-
-void run()
-{
-    getIOService().run();
-}
-
-void dispatch(int const threadCount = 0)
-{
-    const auto threads = threadCount > 0 ? threadCount : int(std::thread::hardware_concurrency());
-    log("Threads: " + std::to_string(threads));
-    for (auto i = 1; i < threads; ++i)
-        go(run);
-
-    run();
-}
+#include "Async.h"
 
 TEST(BACK_TO_FUTURE, AsyncServerTest)
 {
@@ -38,7 +19,7 @@ TEST(BACK_TO_FUTURE, AsyncServerTest)
             {
                 buffer_.resize(4000);
                 socket_.readUntil(buffer_, HTTP_DELIM_BODY, 
-                [this](Error const& error)
+                [this](async::Error const& error)
                 {
                     if (!!error)
                     {
@@ -52,7 +33,7 @@ TEST(BACK_TO_FUTURE, AsyncServerTest)
 
                     socket_.write(
                         buffer_,
-                        [this](Error const& error)
+                        [this](async::Error const& error)
                         {
                             if (!!error)
                             {
@@ -72,7 +53,7 @@ TEST(BACK_TO_FUTURE, AsyncServerTest)
         auto* connection = new Connection;
         acceptor.accept(
             connection->socket_, 
-            [connection, &accepting](Error const& error)
+            [connection, &accepting](async::Error const& error)
             {
                 if (!!error)
                 {
@@ -90,5 +71,5 @@ TEST(BACK_TO_FUTURE, AsyncServerTest)
 
 
     accepting();
-    dispatch();
+    async::dispatch();
 }

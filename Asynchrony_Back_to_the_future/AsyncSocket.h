@@ -1,10 +1,9 @@
 #pragma once
 #include <boost/system/error_code.hpp>
 #include <boost/asio.hpp>
-#include "Helpers.h"
 
-using Error = boost::system::error_code;
-using IoHandler = std::function<void(const Error&)>;
+#include "Async.h"
+#include "Helpers.h"
 
 struct AsyncAcceptor;
 struct AsyncSocket
@@ -13,10 +12,10 @@ struct AsyncSocket
 
     AsyncSocket();
 
-    void read(Buffer&, IoHandler);
-    void readSome(Buffer&, IoHandler);
-    void readUntil(Buffer&, Buffer stopSign, IoHandler);
-    void write(const Buffer&, IoHandler);
+    void read(Buffer&, async::IoHandler);
+    void readSome(Buffer&, async::IoHandler);
+    void readUntil(Buffer&, Buffer stopSign, async::IoHandler);
+    void write(const Buffer&, async::IoHandler);
     void close();
 
 private:
@@ -27,7 +26,7 @@ struct AsyncAcceptor
 {
     explicit AsyncAcceptor(int port);
 
-    void accept(AsyncSocket&, IoHandler);
+    void accept(AsyncSocket&, async::IoHandler);
 
 private:
     boost::asio::ip::tcp::acceptor acceptor_;
