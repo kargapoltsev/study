@@ -12,10 +12,10 @@ struct AsyncSocket
 
     AsyncSocket();
 
-    void read(Buffer&, async::IoHandler);
-    void readSome(Buffer&, async::IoHandler);
-    void readUntil(Buffer&, Buffer stopSign, async::IoHandler);
-    void write(const Buffer&, async::IoHandler);
+    void read(Buffer&, async::AsyncHandler);
+    void readSome(Buffer&, async::AsyncHandler);
+    void readUntil(Buffer&, Buffer stopSign, async::AsyncHandler);
+    void write(const Buffer&, async::AsyncHandler);
     void close();
 
 private:
@@ -26,7 +26,7 @@ struct AsyncAcceptor
 {
     explicit AsyncAcceptor(int port);
 
-    void accept(AsyncSocket&, async::IoHandler);
+    void accept(AsyncSocket&, async::AsyncHandler);
 
 private:
     boost::asio::ip::tcp::acceptor acceptor_;

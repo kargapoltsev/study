@@ -14,20 +14,20 @@ TEST(BACK_TO_FUTURE, MultiThreadedServerTest)
         acceptor.accept(*socket);
         log("Accepted");
 
-        startNewThread([socket]()
+        runInNewThread([socket = std::move(socket)]()
         {
             try {
                 Buffer buffer(4000, 0);
                 (*socket).readUntil(buffer, HTTP_DELIM_BODY);
-                log("Red: " + buffer);
+                log("Read: " + buffer);
 
-                (*socket).write(makeHttpContent("<h1>Hello sync singlethread!</h1>"));
-                log("Wrote");
+                (*socket).write(makeHttpContent("<h1>Hello from sync multi thread server!</h1>"));
+                log("Written");
                 (*socket).close();
                 log("Closed");
             }
             catch (std::exception const& e) {
-                log("error: " + std::string(e.what()));
+                log("Error: " + std::string(e.what()));
             }
         });
     }

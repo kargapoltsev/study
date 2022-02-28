@@ -26,7 +26,7 @@ bool hasEnd(size_t const posEnd, Buffer const& b, Buffer const& stopSign)
         b.rfind(stopSign, posEnd - stopSign.size()) != std::string::npos;
 }
 
-void startNewThread(Handler handler)
+void runInNewThread(Handler handler)
 {
     log("startNewThread");
     std::thread([handler]()

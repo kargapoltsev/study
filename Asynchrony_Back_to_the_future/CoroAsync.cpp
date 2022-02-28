@@ -4,10 +4,23 @@
 namespace coro_async
 {
 
-void go(Handler handler)
+thread_local CoroHandler* currentThreadDeferHandler;
+thread_local const async::Error* currentThreadError;
+
+namespace
+{
+
+bool isCurrentThreadDeferHandlerExist()
+{
+    return currentThreadDeferHandler != nullptr;
+}
+
+}
+
+void runCoroInThreadPool(Handler handler)
 {
     log("coro_async::go ");
-    async::go([handler = std::move(handler)]() mutable
+    async::runInThreadPool([handler = std::move(handler)]() mutable
     {
         auto* coro = new coro::Coro(std::move(handler));
         onCoroComplete(coro);
@@ -15,13 +28,12 @@ void go(Handler handler)
 }
 
 
-thread_local CoroHandler* currentThreadDeferHandler;
-
 void onCoroComplete(coro::Coro* coro)
 {
-    VERIFY(!coro::isInsideInCoro(), "coro_async::onCoroComplete: Complete inside coro");
-    VERIFY(coro->isStarted() == (currentThreadDeferHandler != nullptr), "coro_async::onCoroComplete Unexpected condition in defer/started state");
-    if (currentThreadDeferHandler != nullptr)
+    VERIFY(!coro::isInsideCoro(), "coro_async::onCoroComplete: Complete outside coro");
+    VERIFY(coro->isStarted() == isCurrentThreadDeferHandlerExist(), "coro_async::onCoroComplete Unexpected condition in defer/started state");
+
+    if (isCurrentThreadDeferHandlerExist())
     {
         log("coro_async::onCoroComplete: invoking defer handler");
         (*currentThreadDeferHandler)(coro);
@@ -36,7 +48,6 @@ void onCoroComplete(coro::Coro* coro)
 
 }
 
-thread_local const async::Error* currentThreadError;
 
 void handleError()
 {
@@ -46,7 +57,7 @@ void handleError()
 
 void defer(CoroHandler handler)
 {
-    VERIFY(coro::isInsideInCoro(), "defer() outside coro");
+    VERIFY(coro::isInsideCoro(), "defer() outside coro");
     VERIFY(currentThreadDeferHandler == nullptr, "There is unexecuted defer handler");
     currentThreadDeferHandler = &handler;
     coro::yield();
@@ -55,16 +66,17 @@ void defer(CoroHandler handler)
 
 void onComplete(coro::Coro* coro, async::Error const& error)
 {
+    setlocale(0, "");
     log("async completed, coro: " + std::to_string(reinterpret_cast<int>(coro)) + ", error: " + error.message());
     VERIFY(coro != nullptr, "Coro is null");
-    VERIFY(!coro::isInsideInCoro(), "Completion inside coro");
+    VERIFY(!coro::isInsideCoro(), "Completion inside coro");
     currentThreadError = error ? &error : nullptr;
     coro->resume();
     log("After resume");
     onCoroComplete(coro);
 }
 
-async::IoHandler onCompleteHandler(coro::Coro* coro)
+async::AsyncHandler onCompleteHandler(coro::Coro* coro)
 {
     return [coro](async::Error const& error)
     {

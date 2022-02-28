@@ -4,6 +4,8 @@
 
 void doCoro()
 {
+    auto isInsideCoro = coro::isInsideCoro();
+
     std::cout << '2';
     coro::yield();
     std::cout << '4';
@@ -11,6 +13,8 @@ void doCoro()
 
 TEST(BACK_TO_FUTURE, CoroTest)
 {
+    auto isInsideCoro = coro::isInsideCoro();
+
     std::cout << '1';
     coro::Coro c(doCoro);
     std::cout << '3';

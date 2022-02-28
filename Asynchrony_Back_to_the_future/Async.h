@@ -5,11 +5,11 @@ namespace async
 {
 
 using Error = boost::system::error_code;
-using IoHandler = std::function<void(const Error&)>;
+using AsyncHandler = std::function<void(const Error&)>;
 
-void go(Handler handler);
+void runInThreadPool(Handler handler);
 
-void run();
+void runThreadInPool();
 
 void dispatch(int threadCount = 0);
 

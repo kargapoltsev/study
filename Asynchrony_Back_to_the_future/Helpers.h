@@ -15,7 +15,7 @@ bool hasEnd(size_t const posEnd, Buffer const& b, Buffer const& stopSign);
 
 using Handler = std::function<void()>;
 
-void startNewThread(Handler handler);
+void runInNewThread(Handler handler);
 
 boost::asio::io_service& getIOService();
 

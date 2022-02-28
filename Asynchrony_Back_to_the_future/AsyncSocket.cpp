@@ -20,7 +20,7 @@ AsyncSocket::AsyncSocket()
     : socket_(getIOService())
 {}
 
-void AsyncSocket::read(Buffer& b, async::IoHandler handler)
+void AsyncSocket::read(Buffer& b, async::AsyncHandler handler)
 {
     async_read(
         socket_, 
@@ -33,7 +33,7 @@ void AsyncSocket::read(Buffer& b, async::IoHandler handler)
     );
 }
 
-void AsyncSocket::readSome(Buffer& b, async::IoHandler handler)
+void AsyncSocket::readSome(Buffer& b, async::AsyncHandler handler)
 {
     socket_.async_read_some(
         makeBuffer(b),
@@ -45,7 +45,7 @@ void AsyncSocket::readSome(Buffer& b, async::IoHandler handler)
     );
 }
 
-void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, async::IoHandler handler)
+void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, async::AsyncHandler handler)
 {
     struct UntilHandler
     {
@@ -53,7 +53,7 @@ void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, async::IoHandler handler
             asio::ip::tcp::socket& socket,
             Buffer& buffer,
             Buffer stopSign,
-            async::IoHandler handler)
+            async::AsyncHandler handler)
             : offset_(0)
             , socket_(socket)
             , buffer_(buffer)
@@ -101,7 +101,7 @@ void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, async::IoHandler handler
         asio::ip::tcp::socket& socket_;
         Buffer& buffer_;
         Buffer stopSign_;
-        async::IoHandler handler_;
+        async::AsyncHandler handler_;
     };
 
     UntilHandler(
@@ -111,7 +111,7 @@ void AsyncSocket::readUntil(Buffer& b, Buffer stopSign, async::IoHandler handler
         std::move(handler)).read();
 }
 
-void AsyncSocket::write(const Buffer& b, async::IoHandler handler)
+void AsyncSocket::write(const Buffer& b, async::AsyncHandler handler)
 {
     boost::asio::async_write(
         socket_, 
@@ -134,7 +134,7 @@ AsyncAcceptor::AsyncAcceptor(int const port)
             asio::ip::tcp::v4(), port))
 {}
 
-void AsyncAcceptor::accept(AsyncSocket& socket, async::IoHandler handler)
+void AsyncAcceptor::accept(AsyncSocket& socket, async::AsyncHandler handler)
 {
     acceptor_.async_accept(socket.socket_, handler);
 }

@@ -8,7 +8,7 @@ namespace coro_async
 
 using CoroHandler = std::function<void(coro::Coro*)>;
 
-void go(Handler handler);
+void runCoroInThreadPool(Handler handler);
 
 void onCoroComplete(coro::Coro* coro);
 
@@ -18,6 +18,6 @@ void defer(CoroHandler handler);
 
 void onComplete(coro::Coro* coro, async::Error const& error);
 
-async::IoHandler onCompleteHandler(coro::Coro* coro);
+async::AsyncHandler onCompleteHandler(coro::Coro* coro);
 
 }

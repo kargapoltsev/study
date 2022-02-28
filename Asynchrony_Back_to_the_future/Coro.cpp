@@ -9,11 +9,11 @@ constexpr size_t STACK_SIZE = 1024 * 32;
 
 void yield()
 {
-    VERIFY(isInsideInCoro(), "yield() outside coro");
+    VERIFY(isInsideCoro(), "yield() outside coro");
     currentThreadCoro->yield0();
 }
 
-bool isInsideInCoro()
+bool isInsideCoro()
 {
     return currentThreadCoro != nullptr;
 }

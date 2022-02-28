@@ -7,7 +7,7 @@ namespace coro
 
 void yield();
 
-bool isInsideInCoro();
+bool isInsideCoro();
 
 namespace context = boost::context::detail;
 

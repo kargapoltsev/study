@@ -9,18 +9,19 @@ TEST(BACK_TO_FUTURE, CoroAsyncServerTest)
 {
     Acceptor acceptor(8800);
     log("accepting");
-    go([&acceptor] ()
+    runCoroInThreadPool([&acceptor] ()
     {
         while (true)
         {
             auto* toAccept = new Socket;
             acceptor.accept(*toAccept);
             log("accepted");
-            go([toAccept]
+
+            runCoroInThreadPool([toAccept] () mutable
             {
                 try
                 {
-                    auto socket(std::move(*toAccept));
+                    Socket socket(std::move(*toAccept));
                     delete toAccept;
 
                     Buffer buffer;
@@ -28,7 +29,7 @@ TEST(BACK_TO_FUTURE, CoroAsyncServerTest)
                     {
                         buffer.resize(4000);
                         socket.readUntil(buffer, HTTP_DELIM_BODY);
-                        socket.write(makeHttpContent("<h1>Hello synca!</h1>"));
+                        socket.write(makeHttpContent("<h1>Hello from coro async server!</h1>"));
                     }
                 }
                 catch (std::exception const& e)
